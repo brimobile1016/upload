@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image to Saipul API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        label {
+            font-size: 16px;
+        }
+        input[type="text"], input[type="submit"] {
+            padding: 8px;
+            margin: 10px 0;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Upload Gambar ke Saipul API</h1>
+    <form id="uploadForm">
+        <label for="imageUrl">Masukkan URL Gambar:</label><br>
+        <input type="text" id="imageUrl" name="imageUrl" required placeholder="Masukkan URL gambar"><br>
+        <input type="submit" value="Upload Gambar">
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+        document.getElementById("uploadForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const url = document.getElementById("imageUrl").value;
+            const responseDiv = document.getElementById("response");
+
+            if (!url) {
+                responseDiv.innerHTML = "<p style='color: red;'>URL tidak boleh kosong!</p>";
+                return;
+            }
+
+            try {
+                const apiUrl = `https://api.saipulanuar.eu.org/api/tools/upload?url=${encodeURIComponent(url)}`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    responseDiv.innerHTML = `<p style="color: green;">Gambar berhasil di-upload!</p>
+                                              <p>URL Gambar: <a href="${data.result}" target="_blank">${data.result}</a></p>`;
+                } else {
+                    responseDiv.innerHTML = `<p style="color: red;">Gagal upload gambar: ${data.message}</p>`;
+                }
+            } catch (err) {
+                console.error(err);
+                responseDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan saat meng-upload gambar.</p>`;
+            }
+        });
+    </script>
+
+</body>
+</html>
